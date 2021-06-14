@@ -115,8 +115,48 @@
 -  你可以避免创建者和具体产品之间的紧密耦合。
 -  *单一职责原则*。 你可以将产品创建代码放在程序的单一位置， 从而使得代码更容易维护。
 -  *开闭原则*。 无需更改现有客户端代码， 你就可以在程序中引入新的产品类型。
-
 - 缺点： 应用工厂方法模式需要引入许多新的子类， 代码可能会因此变得更复杂。 最好的情况是将该模式引入创建者类的现有层次结构中。
+
+### 2.1.4 代码实现
+
+以button为例
+
+```java
+interface Button{
+    void clicked();
+}
+class Window{
+    private Button button;
+    Button getButton();
+    void run(){
+        button = getButton();
+        button.clicked();
+	}
+}
+class ButtonA implements Button{
+    void clicked(){
+        //doAthings
+	}
+}
+class ButtonB implements Button{
+    void clicked(){
+        //doBthings
+	}
+}
+class WindowA extends Window{
+    Button getButton(){
+        return new ButtonA();
+    }
+}
+class WindowA extends Window{
+    Button getButton(){
+        return new ButtonB();
+    }
+}
+
+```
+
+
 
 ## 2.2 抽象工厂
 
