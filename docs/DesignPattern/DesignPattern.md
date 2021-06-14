@@ -125,9 +125,9 @@
 interface Button{
     void clicked();
 }
-class Window{
+class abstract Window{
     private Button button;
-    Button getButton();
+    public abstract Button createButton();
     void run(){
         button = getButton();
         button.clicked();
@@ -144,12 +144,12 @@ class ButtonB implements Button{
 	}
 }
 class WindowA extends Window{
-    Button getButton(){
+    public Button createButton(){
         return new ButtonA();
     }
 }
 class WindowA extends Window{
-    Button getButton(){
+    public Button createButton(){
         return new ButtonB();
     }
 }
