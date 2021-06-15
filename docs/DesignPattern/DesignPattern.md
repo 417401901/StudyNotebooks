@@ -184,11 +184,63 @@ class WindowA extends Window{
 ### 2.2.3 优缺点
 
 - 你可以确保同一工厂生成的产品相互匹配。
--  你可以避免客户端和具体产品代码的耦合。
--  *单一职责原则*。 你可以将产品生成代码抽取到同一位置， 使得代码易于维护。
--  *开闭原则*。 向应用程序中引入新产品变体时， 你无需修改客户端代码。
+- 你可以避免客户端和具体产品代码的耦合。
+- *单一职责原则*。 你可以将产品生成代码抽取到同一位置， 使得代码易于维护。
+- *开闭原则*。 向应用程序中引入新产品变体时， 你无需修改客户端代码。
+- 由于采用该模式需要向应用中引入众多接口和类， 代码可能会比之前更加复杂。
 
--  由于采用该模式需要向应用中引入众多接口和类， 代码可能会比之前更加复杂。
+### 2.2.4 代码实现
+
+```java
+interface Button{
+    void clicked();
+}
+interface CheckBox{
+    void clicked();
+}
+class abstract Window{
+    public abstract Button createButton();
+    public abstract CheckBox createCheckBox();
+}
+class ButtonA implements Button{
+    void clicked(){
+        //doAthings
+	}
+}
+class ButtonB implements Button{
+    void clicked(){
+        //doBthings
+	}
+}
+class CheckBoxA implements Button{
+    void clicked(){
+        //doAthings
+	}
+}
+class CheckBoxB implements Button{
+    void clicked(){
+        //doBthings
+	}
+}
+class WindowA extends Window{
+    public Button createButton(){
+        return new ButtonA();
+    }
+    public CheckBoxA createButton(){
+        return new CheckBoxA();
+    }
+}
+class WindowA extends Window{
+    public Button createButton(){
+        return new ButtonB();
+    }
+    public CheckBoxB createButton(){
+        return new CheckBoxB();
+    }
+}
+```
+
+
 
 ## 2.3 单例模式
 
@@ -219,5 +271,38 @@ class WindowA extends Window{
 -  该模式在多线程环境下需要进行特殊处理， 避免多个线程多次创建单例对象。
 -  单例的客户端代码单元测试可能会比较困难， 因为许多测试框架以基于继承的方式创建模拟对象。 由于单例类的构造函数是私有的， 而且绝大部分语言无法重写静态方法， 所以你需要想出仔细考虑模拟单例的方法。 要么干脆不编写测试代码， 或者不使用单例模式
 
+## 2.4 原型模式
 
+利用克隆复制对象。
+
+### 2.4.1 应用场景
+
+1.如果你需要复制一些对象，同时又希望代码独立于这些对象所属的具体类，可以使用原型模式。
+
+2.如果子类的区别仅在于其对象的初始化方式，那么你可以使用该模式来减少子类的数量。别人创建这些子类的目的可能是为了创建特定类型的对象。
+
+## 2.4.2 实现方法
+
+1. 创建原型接口， 并在其中声明 `克隆`方法。 如果你已有类层次结构， 则只需在其所有类中添加该方法即可。
+
+2. 原型类必须另行定义一个以该类对象为参数的构造函数。 构造函数必须复制参数对象中的所有成员变量值到新建实体中。 如果你需要修改子类， 则必须调用父类构造函数， 让父类复制其私有成员变量值。
+
+   如果编程语言不支持方法重载， 那么你可能需要定义一个特殊方法来复制对象数据。 在构造函数中进行此类处理比较方便， 因为它在调用 `new`运算符后会马上返回结果对象。
+
+3. 克隆方法通常只有一行代码： 使用 `new`运算符调用原型版本的构造函数。 注意， 每个类都必须显式重写克隆方法并使用自身类名调用 `new`运算符。 否则， 克隆方法可能会生成父类的对象。
+
+4. 你还可以创建一个中心化原型注册表， 用于存储常用原型。
+
+   你可以新建一个工厂类来实现注册表， 或者在原型基类中添加一个获取原型的静态方法。 该方法必须能够根据客户端代码设定的条件进行搜索。 搜索条件可以是简单的字符串， 或者是一组复杂的搜索参数。 找到合适的原型后， 注册表应对原型进行克隆， 并将复制生成的对象返回给客户端。
+
+   最后还要将对子类构造函数的直接调用替换为对原型注册表工厂方法的调用。
+
+### 2.4.3 优缺点
+
+- 你可以克隆对象， 而无需与它们所属的具体类相耦合。
+-  你可以克隆预生成原型， 避免反复运行初始化代码。
+-  你可以更方便地生成复杂对象。
+-  你可以用继承以外的方式来处理复杂对象的不同配置。
+
+-  克隆包含循环引用的复杂对象可能会非常麻烦。
 
